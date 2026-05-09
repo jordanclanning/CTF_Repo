@@ -1,4 +1,4 @@
-# NetworkCap1 — Chrome Update Malware Download
+# HCR1.pcap — Chrome Update Malware Download
 
 - **Purpose:** This challenge simulates a compromised host downloading a malicious executable disguised as a Chrome browser update from a suspicious external server.
 
