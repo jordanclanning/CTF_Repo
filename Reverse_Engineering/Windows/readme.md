@@ -1,4 +1,4 @@
-# Reverse Engineering — PE
+# Reverse Engineering — Windows
 
 Windows-based PE (Portable Executable) binary challenges organized by month. All challenges can be solved using a debugger, decompiler, or static analysis tools.
 
