@@ -1,6 +1,6 @@
-# Reverse Engineering — ELF
+# Reverse Engineering — Linux
 
-Linux-based ELF binary challenges organized by month. All challenges can be solved using a debugger, decompiler, or static analysis tools.
+Linux-based binary challenges organized by month. All challenges can be solved using a debugger, decompiler, or static analysis tools.
 
 ---
 
