@@ -1,4 +1,4 @@
-# Reverse Engineering — ELF / May 2026
+# Reverse Engineering — Linux / May 2026
 
 These are Linux-based ELF binary challenges. All can be solved using 1) a debugger, 2) a decompiler, or 3) generative AI. They are relatively approachable for anyone familiar with tools like GDB, Ghidra, or strings analysis.
 
