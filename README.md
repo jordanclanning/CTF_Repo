@@ -43,6 +43,8 @@ Docker-based web exploitation challenges covering source inspection, client-side
 - Tools: Burp Suite, browser DevTools, sqlmap, curl
 - [Go to Web](./Web/)
 
+    ### NOTE - Web/April2026 challenges may need modification for file paths as the GitHub directory was cloned & modified.
+
 ---
 
 ## Usage
