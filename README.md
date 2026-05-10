@@ -12,9 +12,9 @@ CTF_Repo/
 │   └── Web/                  # PCAP-based network forensics challenges
 │       └── May2026/
 ├── Reverse_Engineering/
-│   ├── ELF/                  # Linux binary challenges
+│   ├── Linux/                  # Linux binary challenges
 │   │   └── May2026/
-│   └── PE/                   # Windows binary challenges (coming soon)
+│   └── Windows/                   # Windows binary challenges (coming soon)
 └── Web/                      # Web exploitation challenges
     ├── April2026/
     └── May2026/
@@ -90,8 +90,8 @@ wireshark Forensics/Web/May2026/HCR1.pcap
 | Challenge3Lann | Web | Easy | April 2026 |
 | Challenge4Lann | Web | Medium | April 2026 |
 | Challenge5Lann | Web | Medium | April 2026 |
-| Wheres_The_Flag | RE/ELF | Easy | April 2026 |
-| challenge_split | RE/ELF | Easy | April 2026 |
-| malicious_calculator | RE/ELF | Easy | April 2026 |
-| ransomware | RE/ELF | Easy | April 2026 |
+| Wheres_The_Flag | RE/Linux | Easy | April 2026 |
+| challenge_split | RE/Linux | Easy | April 2026 |
+| malicious_calculator | RE/Linux | Easy | April 2026 |
+| ransomware | RE/Linux | Easy | April 2026 |
 | HCR1.pcap | Forensics/Web | Easy | May 2026 |
