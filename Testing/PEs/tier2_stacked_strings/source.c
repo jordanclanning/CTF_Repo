@@ -29,24 +29,26 @@ __attribute__((used)) static const char* MSG_DONE = "All checks passed.";
 __attribute__((used)) static const char* MSG_LOG = "Log written to: C:\\ProgramData\\AcmeCorp\\diag.log";
 __attribute__((used)) static const char* SUPPORT_URL = "https://support.acme-corp.local/diagnostics";
 
-/* Reconstruct the diagnostic signature in a local stack buffer.
- * Each byte is assigned individually so the resulting string
- * never appears in any data section. */
-static int run_signature_check(void) {
-    /* Reserve enough space for the longest plausible flag.
-     * Build will populate the assignments. */
-    volatile char sig[256] = {0};
+/* Marked noinline so the optimizer can't constant-propagate or
+ * inline-and-eliminate the stack-string construction. */
+__attribute__((noinline))
+static unsigned int run_signature_check(void) {
+    char sig[256] = {0};
 
     /* {{FLAG_BYTES}} */
 
-    /* "Use" the constructed buffer so the optimizer doesn't
-     * eliminate the assignments. We compute a trivial checksum
-     * and discard it - the bytes still get written. */
-    volatile unsigned int checksum = 0;
-    for (int i = 0; i < (int)sizeof(sig); i++) {
-        checksum += (unsigned char)sig[i];
+    /* Compute checksum; the return value is propagated all the way
+     * to main's exit status, so the compiler MUST emit the writes. */
+    unsigned int checksum = 0;
+    for (int i = 0; i < 256; i++) {
+        checksum = (checksum * 33) + (unsigned char)sig[i];
     }
-    return (checksum != 0) ? 0 : 1;
+
+    /* Memory clobber prevents the optimizer from reasoning about
+     * the bytes after this point. Belt-and-suspenders. */
+    __asm__ volatile ("" : : "r"(sig) : "memory");
+
+    return checksum;
 }
 
 int main(int argc, char** argv) {
@@ -57,13 +59,15 @@ int main(int argc, char** argv) {
     printf("%s\n", MSG_DISK);
     printf("%s\n", MSG_NET);
 
-    /* Run the internal signature check (constructs the stacked string).
-     * We don't print the result - this is intentional. */
-    int sig_status = run_signature_check();
-    (void)sig_status;
+    /* Run the internal signature check. The return value flows
+     * out as our exit status modulo 256, so the optimizer cannot
+     * eliminate the stack-string construction. */
+    unsigned int sig_status = run_signature_check();
 
     printf("%s\n", MSG_DONE);
     printf("%s\n", MSG_LOG);
     printf("For support, visit %s\n", SUPPORT_URL);
-    return 0;
+
+    /* Exit status depends on the constructed bytes. */
+    return (int)(sig_status & 0xFF);
 }
