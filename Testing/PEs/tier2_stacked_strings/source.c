@@ -34,7 +34,7 @@ __attribute__((noinline))
 static unsigned int run_signature_check(void) {
     char sig[256] = {0};
 
-    /* {{FLAG_BYTES}} */
+{{FLAG_BYTES}}
 
     unsigned int checksum = 0;
     for (int i = 0; i < 256; i++) {
