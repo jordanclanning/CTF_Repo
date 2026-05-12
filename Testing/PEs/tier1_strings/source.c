@@ -2,17 +2,20 @@
  * LicenseValidator.exe - Tier 1 PE CTF challenge source
  *
  * Looks like a license validation utility. The flag is stored as a
- * plain string constant in the .data/.rdata section, trivially
+ * plain string constant in the binary's .rdata section, trivially
  * recoverable with `strings`.
  *
- * The {{FLAG}} placeholder is replaced at build time by build.py.
+ * The placeholder is replaced at build time by build.py.
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-/* License validation key - DO NOT MODIFY - Acme Corp Licensing */
+/* License validation key - DO NOT MODIFY - Acme Corp Licensing.
+ * Marked 'used' so the optimizer keeps the symbol in .rdata even
+ * if it would otherwise eliminate it as dead code. */
+__attribute__((used))
 static const char LICENSE_KEY[] = "{{FLAG}}";
 
 /* Decoy strings to bulk out the binary - look like real license logic */
@@ -42,8 +45,12 @@ int main(int argc, char** argv) {
     }
 
     /* "Validate" the input - the actual check is a decoy.
-       The real flag is the LICENSE_KEY constant above, which
-       is visible via `strings` without ever running this binary. */
+       Touching LICENSE_KEY's address here guarantees it stays in the
+       binary even with -Os optimization. The real flag is the
+       LICENSE_KEY constant, recoverable via `strings`. */
+    volatile const char* keep_alive = LICENSE_KEY;
+    (void)keep_alive;
+
     if (strcmp(input, "ACME-DEMO-KEY-2026") == 0) {
         printf("%s\n", MSG_ACCEPTED);
         printf("%s\n", MSG_INIT);
