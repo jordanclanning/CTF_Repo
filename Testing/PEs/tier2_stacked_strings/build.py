@@ -77,7 +77,7 @@ def main():
         sys.exit(1)
 
     flag_bytes_c = generate_stacked_string_c(args.flag)
-    patched_source = source.replace("{{FLAG_BYTES}}", flag_bytes_c)
+    patched_source = source.replace("{{FLAG_BYTES}}", flag_bytes_c, 1)
 
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=".c", delete=False, dir="."
