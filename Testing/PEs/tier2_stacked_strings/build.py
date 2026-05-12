@@ -8,6 +8,11 @@ with the flag constructed byte-by-byte on the stack at runtime.
 The flag NEVER appears contiguously in any data section. `strings`
 will not find it. Intended solving tool: FLOSS (flare-floss).
 
+NOTE: Built with -O0 (no optimization). GCC's optimizer is aggressive
+enough at -Os to constant-fold the stack-string construction away,
+defeating the entire challenge. -O0 guarantees the byte writes appear
+as real instructions in .text where FLOSS can emulate them.
+
 Usage:
   python3 build.py --flag "CTF{example_flag}"
   python3 build.py --flag "CTF{x}" --output MyDiagnostic.exe
@@ -42,7 +47,6 @@ def generate_stacked_string_c(flag):
     flag_bytes = flag.encode("utf-8")
     for i, b in enumerate(flag_bytes):
         lines.append("    sig[" + str(i) + "] = 0x" + format(b, "02x") + ";")
-    # Null terminator (explicit)
     lines.append("    sig[" + str(len(flag_bytes)) + "] = 0x00;")
     return "\n".join(lines)
 
@@ -65,7 +69,6 @@ def main():
         print("ERROR: flag too long (must be < 250 chars).", file=sys.stderr)
         sys.exit(1)
 
-    # Read source, replace placeholder with byte-by-byte assignments
     with open(SOURCE_FILE, "r") as f:
         source = f.read()
 
@@ -76,7 +79,6 @@ def main():
     flag_bytes_c = generate_stacked_string_c(args.flag)
     patched_source = source.replace("{{FLAG_BYTES}}", flag_bytes_c)
 
-    # Write patched source to a temp file, compile, clean up
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=".c", delete=False, dir="."
     ) as tmp:
@@ -90,9 +92,8 @@ def main():
                 COMPILER,
                 tmp_path,
                 "-o", args.output,
-                "-Os",
-                "-s",
-                "-static",
+                "-O0",            # NO optimization — required for stacked strings
+                "-static",        # static link
             ],
             capture_output=True,
             text=True,
