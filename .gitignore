@@ -1,0 +1,27 @@
+# Built artifacts — never commit
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.xlsm
+*.docm
+*.exe
+*.rtf
+*.zip
+output/
+extracted-*
+extractions/
+
+# Real flag configs — never commit
+configs/team_flags.conf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editor / system
+.vscode/
+.idea/
+.DS_Store
