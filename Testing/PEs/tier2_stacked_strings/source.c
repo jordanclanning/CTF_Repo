@@ -9,8 +9,9 @@
  * FLOSS (https://github.com/mandiant/flare-floss), which emulates
  * functions to recover stack-constructed strings.
  *
- * The {{FLAG_BYTES}} placeholder is replaced at build time with C
- * source like:  s[0]='C'; s[1]='T'; ... etc.
+ * The placeholder in run_signature_check below is replaced at build
+ * time by build.py with C source like:
+ *   sig[0] = 0x43;  sig[1] = 0x54;  ...
  */
 
 #include <stdio.h>
@@ -29,23 +30,17 @@ __attribute__((used)) static const char* MSG_DONE = "All checks passed.";
 __attribute__((used)) static const char* MSG_LOG = "Log written to: C:\\ProgramData\\AcmeCorp\\diag.log";
 __attribute__((used)) static const char* SUPPORT_URL = "https://support.acme-corp.local/diagnostics";
 
-/* Marked noinline so the optimizer can't constant-propagate or
- * inline-and-eliminate the stack-string construction. */
 __attribute__((noinline))
 static unsigned int run_signature_check(void) {
     char sig[256] = {0};
 
     /* {{FLAG_BYTES}} */
 
-    /* Compute checksum; the return value is propagated all the way
-     * to main's exit status, so the compiler MUST emit the writes. */
     unsigned int checksum = 0;
     for (int i = 0; i < 256; i++) {
         checksum = (checksum * 33) + (unsigned char)sig[i];
     }
 
-    /* Memory clobber prevents the optimizer from reasoning about
-     * the bytes after this point. Belt-and-suspenders. */
     __asm__ volatile ("" : : "r"(sig) : "memory");
 
     return checksum;
@@ -59,15 +54,11 @@ int main(int argc, char** argv) {
     printf("%s\n", MSG_DISK);
     printf("%s\n", MSG_NET);
 
-    /* Run the internal signature check. The return value flows
-     * out as our exit status modulo 256, so the optimizer cannot
-     * eliminate the stack-string construction. */
     unsigned int sig_status = run_signature_check();
 
     printf("%s\n", MSG_DONE);
     printf("%s\n", MSG_LOG);
     printf("For support, visit %s\n", SUPPORT_URL);
 
-    /* Exit status depends on the constructed bytes. */
     return (int)(sig_status & 0xFF);
 }
